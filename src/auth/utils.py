@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from src.config import Config
 import jwt
 import uuid
+import logging
 
 passwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -36,5 +37,14 @@ def create_access_token(
 
     return token
 
+
 def decode_token(token: str) -> dict:
-    
+    try:
+        token_data = jwt.decode(
+            jwt=token, key=Config.JWT_SECRET, algorithms=[Config.JWT_ALGORITHM]
+        )
+
+        return token_data
+    except jwt.PyJWTError as e:
+        logging.exception(e)
+        return None
