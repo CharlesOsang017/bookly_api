@@ -4,6 +4,10 @@ from src.config import Config
 import jwt
 import uuid
 import logging
+from fastapi import HTTPException, status
+
+# import jwt
+from jwt.exceptions import PyJWTError
 
 passwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -45,6 +49,9 @@ def decode_token(token: str) -> dict:
         )
 
         return token_data
-    except jwt.PyJWTError as e:
-        logging.exception(e)
-        return None
+    except PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
