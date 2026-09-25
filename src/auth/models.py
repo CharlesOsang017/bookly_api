@@ -15,6 +15,9 @@ class User(SQLModel, table=True):
     password_hash: str = Field(exclude=True)
     first_name: str
     last_name: str
+    role: str = Field(
+        sa_column=Column(pg.VARCHAR, nullable=False, server_default="user")
+    )
     is_verified: bool = False
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
