@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 from datetime import date, datetime
 from uuid import UUID
+from typing import Optional
 
 
 class Book(BaseModel):
@@ -12,6 +13,7 @@ class Book(BaseModel):
     published_date: date
     page_count: int
     language: str
+    user_uid: Optional[UUID] = None
     created_at: datetime
     updated_at: datetime
 
