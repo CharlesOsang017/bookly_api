@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Depends, Response
+from fastapi import APIRouter, status, HTTPException, Depends
 from typing import List
 from uuid import UUID
 from src.books.schemas import Book, BookCreateModel, BookUpdateModel
@@ -79,12 +79,14 @@ async def update_a_book(
 
 
 @book_router.delete(
-    "/{book_uid}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[role_checker]
+    "/{book_uid}", status_code=status.HTTP_200_OK, dependencies=[role_checker]
 )
-async def delete_a_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+async def delete_a_book(
+    book_uid: str, session: AsyncSession = Depends(get_session)
+) -> dict[str, str]:
     book_to_delete = await book_service.delete_book(book_uid, session)
     if book_to_delete:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        return {"message": "Book deleted successfully", "book_uid": book_uid}
     else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
