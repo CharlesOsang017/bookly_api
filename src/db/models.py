@@ -30,6 +30,9 @@ class User(SQLModel, table=True):
     books: List["models.Book"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
     )
+    reviews: List["models.Review"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -59,6 +62,9 @@ class Book(SQLModel, table=True):
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     user: Optional["models.User"] = Relationship(back_populates="books")
+    reviews: List["models.Review"] = Relationship(
+        back_populates="book", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     def __repr__(self):
         return f"<Book {self.title}>"
@@ -83,15 +89,16 @@ class Review(SQLModel, table=True):
         default=None,
         sa_column=Column(
             pg.UUID,
-            ForeignKey("books.uid"),
+            ForeignKey("books.uuid"),
             nullable=True,
         ),
     )
-    rating: int = Field(lte=5)
+    rating: int = Field(lt=5)
     review_text: str
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
-    user: Optional["models.User"] = Relationship(back_populates="books")
+    user: Optional["models.User"] = Relationship(back_populates="reviews")
+    book: Optional["models.Book"] = Relationship(back_populates="reviews")
 
     def __repr__(self):
         return f"<Review for book {self.book_uid} by user {self.user_uid}>"
